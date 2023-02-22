@@ -20,7 +20,9 @@ visual_path = None  # './vis-cub-inception-cf/'  # None
 ##################################################
 # Dataset/Path Config
 ##################################################
-tag = 'aircraft'                # 'aircraft', 'bird', 'car', or 'dog'
+tag = 'bird'                # 'aircraft', 'bird', 'car', or 'dog'
 
 # checkpoint model for resume training
-ckpt = './FGVC/aircraft/wsdan-res101-cal/model_bestacc.pth'
+import os
+print(os.getcwd())
+ckpt = './FGVC/bird/wsdan-resnet101-cal/model_bestacc.pth'
