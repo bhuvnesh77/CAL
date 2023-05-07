@@ -1,5 +1,7 @@
 # CAL-FGVC
-This work is an extention of the work of https://github.com/raoyongming/CAL. We have extended the work by introducing creation of counterfactual attention maps via attention space perturbation, feature space perturbation and input space perturbation.
+This work is an extention of the work of https://github.com/raoyongming/CAL. We have extended the work by introducing creation of counterfactual attention maps via attention space perturbation, feature space perturbation and input space perturbation. 
+
+The goal of fine-grained visual classification is to identify images belonging to multiple sub-categories within the same parent category. Because of the inherently nuanced variations among highly-confused categories, this is often considered a difficult task. Recently, the attention mechanism has shown significant potential in fine-grained visual recognition tasks. Combining deep learning and causal inference, our project explores the causal effect of attention on the final classification score for fine-grained classification on datasets such as CUB-200-2011 and FGVC-Aircraft, based on \cite{rao2021counterfactual}. We study the impact of adversarially generated attention maps introduced as counterfactual attentions and visualize them using post-hoc explainability methods.
 
 This folder contains the implementation of the fine-grained image classification experiments.
 
