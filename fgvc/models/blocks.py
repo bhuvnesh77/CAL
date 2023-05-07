@@ -8,7 +8,7 @@ __all__ = ['CBAMLayer', 'SPPLayer']
 '''
     Woo et al., 
     "CBAM: Convolutional Block Attention Module", 
-    ECCV 2018,
+    ECCV 2018,project_name: CUB200-T2
     arXiv:1807.06521
 '''
 class CBAMLayer(nn.Module):

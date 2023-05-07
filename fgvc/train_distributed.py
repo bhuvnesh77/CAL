@@ -1,17 +1,21 @@
 import os
 import config_distributed as config
-
 import time
 import logging
 import warnings
 from tqdm import tqdm
 import torch
+import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import transforms
 import random
+import torchattacks
+from cleverhans.torch.attacks import fast_gradient_method
 from models import WSDAN_CAL
+from torchvision.models.feature_extraction import get_graph_node_names
+from models.pim_module.pim_module import PluginMoodel
 from utils import CenterLoss, AverageMeter, TopKAccuracyMetric, ModelCheckpoint, batch_augment
 from datasets import get_trainval_datasets
 import math
@@ -22,8 +26,12 @@ from apex.parallel import DistributedDataParallel as DDP
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--local_rank', type=int, default=0)
+parser.add_argument('--adv', action='store_true')
 args = parser.parse_args()
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="3,4,5,6"
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 # General loss functions
 cross_entropy_loss = nn.CrossEntropyLoss()
@@ -71,6 +79,11 @@ def main():
     logs = {}
     start_epoch = 0
     net = WSDAN_CAL(num_classes=num_classes, M=config.num_attentions, net=config.net, pretrained=True)
+    if args.adv:
+        net_adv = WSDAN_CAL(num_classes=num_classes, M=config.num_attentions, net=config.net, pretrained=True)
+        for param in net_adv.parameters():
+            param.requires_grad = False     
+        net_adv.load_chkpt(path='/home/bhuvnesh.kumar/Downloads/Projects/CAL/fgvc/FGVC/bird/Random_Reverse/wsdan-resnet101-cal/model_bestacc.pth')
 
     # feature_center: size of (#classes, #attention_maps * #channel_features)
     feature_center = torch.zeros(num_classes, config.num_attentions * net.num_features).cuda()
@@ -103,15 +116,21 @@ def main():
     # Use cuda
     ##################################
     print("using apex synced BN")
+    
     net = apex.parallel.convert_syncbn_model(net)
     net.cuda()
-
+    if args.adv:
+        net_adv = apex.parallel.convert_syncbn_model(net_adv)
+        net_adv.cuda()
     learning_rate = config.learning_rate
     print('begin with', learning_rate, 'learning rate')
     optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=1e-5)
 
     net, optimizer = amp.initialize(net, optimizer, opt_level='O0')
+
     net = DDP(net, delay_allreduce=True)
+    if args.adv:
+        net_adv = DDP(net_adv, delay_allreduce=True)
 
 
     train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
@@ -156,6 +175,7 @@ def main():
               logs=logs,
               data_loader=train_loader,
               net=net,
+              net_adv=net_adv,
               feature_center=feature_center,
               optimizer=optimizer,
               pbar=pbar)
@@ -190,7 +210,11 @@ def train(**kwargs):
     feature_center = kwargs['feature_center']
     optimizer = kwargs['optimizer']
     pbar = kwargs['pbar']
-
+    net_adv = kwargs['net_adv']
+    if args.adv:
+        attack = torchattacks.FGSM(net_adv, eps=8/255)
+        attack.set_normalization_used(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        # attack.set_mode_targeted_by_label()
     # metrics initialization
     loss_container.reset()
     raw_metric.reset()
@@ -211,8 +235,14 @@ def train(**kwargs):
         # obtain data for training
         X = X.cuda()
         y = y.cuda()
-
-        y_pred_raw, y_pred_aux, feature_matrix, attention_map = net(X)
+        
+        if args.adv:
+            predicted_y = net_adv(X)
+            # new_labels = (predicted_y + 1) % 200
+            adv_x = attack(X, predicted_y)
+            y_pred_raw, y_pred_aux, feature_matrix, attention_map = net(X, adv_x, adv=False)
+        else:
+            y_pred_raw, y_pred_aux, feature_matrix, attention_map = net(X, adv=False)
 
         # Update Feature Center
         feature_center_batch = F.normalize(feature_center[y], dim=-1)
@@ -228,7 +258,7 @@ def train(**kwargs):
         y_aug = torch.cat([y, y], dim=0)
 
         # crop images forward
-        y_pred_aug, y_pred_aux_aug, _, _ = net(aug_images)
+        y_pred_aug, y_pred_aux_aug, _, _ = net(aug_images, adv=False)
 
         y_pred_aux = torch.cat([y_pred_aux, y_pred_aux_aug], dim=0)
         y_aux = torch.cat([y, y_aug], dim=0)
@@ -293,14 +323,14 @@ def validate(**kwargs):
             # obtain data
             X = X.cuda()
             y = y.cuda()
-
+    #torch.save(net.module, config.save_dir + 'test.pth')
             ##################################
             # Raw Image
             ##################################
-            y_pred_raw, y_pred_aux, _, attention_map = net(X)
+            y_pred_raw, y_pred_aux, _, attention_map = net(X, adv = False)
 
             crop_images3 = batch_augment(X, attention_map, mode='crop', theta=0.1, padding_ratio=0.05)
-            y_pred_crop3, y_pred_aux_crop3, _, _ = net(crop_images3)
+            y_pred_crop3, y_pred_aux_crop3, _, _ = net(crop_images3, adv = False)
 
             ##################################
             # Final prediction
@@ -353,6 +383,8 @@ def validate(**kwargs):
 
 def save_model(net, logs, ckpt_name):
     torch.save({'logs': logs, 'state_dict': net.module.state_dict()}, config.save_dir + 'model_bestacc.pth')
+    #torch.save({'state_dict': net.module.state_dict()}, config.save_dir + 'test.pth')
+    # torch.save(net.module.state_dict(), config.save_dir + 'test.pth')
 
 def accuracy(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""

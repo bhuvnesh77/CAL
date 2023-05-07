@@ -4,3 +4,8 @@ fgvc/FGVC/
 fgvc/__pycache__/
 fgvc/datasets/__pycache__/
 fgvc/models/__pycache__/
+fgvc/Bird/
+fgvc/Resnet_9_epochs/
+fgvc/adversarial_img/
+fgvc/aircraft_visual/
+fgvc/resnet_tl/

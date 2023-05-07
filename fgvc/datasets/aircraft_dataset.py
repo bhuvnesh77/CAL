@@ -6,7 +6,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from utils import get_transform
 
-DATAPATH = './fgvc-aircraft-2013b/data/'
+DATAPATH = '/home/bhuvnesh.kumar/Downloads/Projects/CAL/fgvc/fgvc-aircraft-2013b/data/'
 FILENAME_LENGTH = 7
 
 

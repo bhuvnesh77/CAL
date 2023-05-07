@@ -5,7 +5,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from utils import get_transform
 
-DATAPATH = './CUB_200_2011'
+DATAPATH = '/home/bhuvnesh.kumar/Downloads/Projects/CAL/fgvc/CUB_200_2011/'
 image_path = {}
 image_label = {}
 
@@ -26,7 +26,7 @@ class BirdDataset(Dataset):
         __len__(self):                  returns the length of dataset
     """
 
-    def __init__(self, phase='train', resize=500):
+    def __init__(self, phase='train', resize=[500,500]):
         assert phase in ['train', 'val', 'test']
         self.phase = phase
         self.resize = resize

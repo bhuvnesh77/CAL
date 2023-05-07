@@ -3,7 +3,8 @@
 ##################################################
 workers = 1                 # number of Dataloader workers
 epochs = 160                # number of epochs
-batch_size = 4             # batch size
+# epochs=2
+batch_size = 12             # batch size
 learning_rate = 1e-3        # initial learning rate
 
 ##################################################
@@ -20,7 +21,7 @@ beta = 5e-2                 # param for update feature centers
 tag = 'bird'                # 'aircraft', 'bird', 'car', or 'dog'
 
 # saving directory of .ckpt models
-save_dir = './FGVC/bird/wsdan-resnet101-cal/'
+save_dir = './FGVC/bird/FGSM/'
 model_name = 'model.ckpt'
 log_name = 'train.log'
 
