@@ -1,4 +1,6 @@
 # CAL-FGVC
+This work is an extention of the work of https://github.com/raoyongming/CAL. We have extended the work by introducing creation of counterfactual attention maps via attention space perturbation, feature space perturbation and input space perturbation.
+
 This folder contains the implementation of the fine-grained image classification experiments.
 
 Our implementation is based on the Pytorch version code of [WS-DAN](https://github.com/GuYuc/WS-DAN.PyTorch).
@@ -45,4 +47,13 @@ Download FGVC-Aircraft dataset from [this like](http://www.robots.ox.ac.uk/~vgg/
 * PyTorch 1.6+
 * Apex
 
-
+## Citation
+If you find our work useful in your research, please consider citing:
+```
+@inproceedings{rao2021counterfactual,
+  title={Counterfactual Attention Learning for Fine-Grained Visual Categorization and Re-identification},
+  author={Rao, Yongming and Chen, Guangyi and Lu, Jiwen and Zhou, Jie},
+  booktitle={ICCV},
+  year={2021}
+}
+```
