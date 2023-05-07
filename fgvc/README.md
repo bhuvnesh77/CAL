@@ -50,7 +50,6 @@ Download FGVC-Aircraft dataset from [this like](http://www.robots.ox.ac.uk/~vgg/
 * Apex
 
 ## Citation
-If you find our work useful in your research, please consider citing:
 ```
 @inproceedings{rao2021counterfactual,
   title={Counterfactual Attention Learning for Fine-Grained Visual Categorization and Re-identification},
