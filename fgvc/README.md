@@ -42,6 +42,7 @@ Download FGVC-Aircraft dataset from [this like](http://www.robots.ox.ac.uk/~vgg/
 ## Training & Evaluation
 - Modify `config_distributed.py` to run experiments on different datasets
 - Run `bash train_distributed.sh` to train models.
+  - Run with the argument --adv for adversarial example generation
 - Set configurations in ```config_infer.py``` and run  `python infer.py` to conduct multi-crop evaluation.
 
 ## Requirements
