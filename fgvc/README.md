@@ -20,17 +20,6 @@ Download CUB-200-2011 dataset from [this link](http://www.vision.caltech.edu/vis
                   └─── 002.Laysan_Albatross
                   └─── ...
   ```
-### Stanford Cars
-Download Stanford Cars dataset from [this link](https://ai.stanford.edu/~jkrause/cars/car_dataset.html) and move the uncompressed data folder to `./stanford_cars`. The data structure should be: 
-
-  ```
-  -/stanford_cars
-        └─── car_ims
-                  └─── 00001.jpg
-                  └─── 00002.jpg
-                  └─── ...
-        └─── cars_annos.mat
-  ```
 
 ### FGVC-Aircraft
 Download FGVC-Aircraft dataset from [this like](http://www.robots.ox.ac.uk/~vgg/data/fgvc-aircraft/) and move the uncompressed data folder to `./fgvc-aircraft-2013b`. The data structure should be: 
