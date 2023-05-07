@@ -49,6 +49,9 @@ Download FGVC-Aircraft dataset from [this like](http://www.robots.ox.ac.uk/~vgg/
 * PyTorch 1.6+
 * Apex
 
+## Trained Best Models
+Trained best models for CUB-200-2011 and FGVC-Aircraft can be found at https://1drv.ms/f/s!AhXJcog2GeDigWyInH7pr5ZU2i6X?e=fX1T1r
+
 ## Citation
 ```
 @inproceedings{rao2021counterfactual,
