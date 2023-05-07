@@ -12,9 +12,6 @@ We propose to learn the attention with counterfactual causality, which provides 
 
 See [CAL-FGVC](fgvc/).
 
-## CAL for Person Re-Identification
-
-See [CAL-ReID](reid/).
 
 ## License
 MIT License
